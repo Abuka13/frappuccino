@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS menu_item_ingredients (
     id SERIAL PRIMARY KEY,
     menu_item_id TEXT NOT NULL REFERENCES menu_items(id) ON DELETE CASCADE,
     ingredient_id TEXT NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
-    quantity NUMERIC NOT NULL CHECK (quantity > 0),
+    quantity NUMERIC(10, 5) NOT NULL CHECK (quantity > 0),
     CONSTRAINT unique_menu_item_ingredient UNIQUE (menu_item_id, ingredient_id)
 );
 
@@ -81,7 +81,6 @@ CREATE TABLE IF NOT EXISTS inventory_transactions (
     changed_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-
 CREATE INDEX idx_orders_customer_id ON orders(customer_id);
 CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_order_items_order_id ON order_items(order_id);
@@ -93,9 +92,8 @@ CREATE INDEX idx_inventory_stock_level ON inventory(stock);
 CREATE INDEX idx_order_status_history_order_id ON order_status_history(order_id);
 CREATE INDEX idx_price_history_menu_item_id ON price_history(menu_item_id);
 
-
-INSERT INTO inventory (id, name, stock, unit_type, price)
-VALUES
+-- Insert mock data into the inventory table
+INSERT INTO inventory (id, name, stock, unit_type, price) VALUES
 ('espresso_beans', 'Espresso Beans', 150, 'kg', 12.0),
 ('milk', 'Milk', 100, 'liters', 2.0),
 ('chocolate_syrup', 'Chocolate Syrup', 50, 'liters', 8.0),
@@ -115,11 +113,18 @@ VALUES
 ('bagels', 'Bagels', 180, 'pieces', 1.8),
 ('cream', 'Cream', 30, 'liters', 3.0),
 ('sugar', 'Sugar', 150, 'kg', 1.2),
-('coffee_cups', 'Coffee Cups', 1000, 'pieces', 0.05);
+('coffee_cups', 'Coffee Cups', 1000, 'pieces', 0.05),
+('flour', 'Flour', 300, 'kg', 1.0),
+('ham', 'Ham', 70, 'kg', 8.0);
 
-
-INSERT INTO menu_items (id, name, description, price, allergens, category, size)
-VALUES
+INSERT INTO menu_items (id, name, description, price, allergens, category, size) VALUES
+('cappuccino', 'Cappuccino', 'Espresso with steamed milk and thick foam', 4.00, ARRAY['coffee', 'milk'], 'Beverage', 'medium'),
+('americano', 'Americano', 'Espresso diluted with hot water', 3.50, ARRAY['coffee'], 'Beverage', 'medium'),
+('flat_white', 'Flat White', 'Espresso with smooth steamed milk', 4.20, ARRAY['coffee', 'milk'], 'Beverage', 'medium'),
+('cheese_croissant', 'Cheese Croissant', 'Croissant filled with cheese', 3.00, ARRAY['gluten', 'dairy'], 'Pastry', 'small'),
+('chocolate_croissant', 'Chocolate Croissant', 'Croissant filled with chocolate', 3.50, ARRAY['gluten', 'dairy'], 'Pastry', 'small'),
+('muffin', 'Muffin', 'Soft baked muffin', 2.80, ARRAY['gluten', 'dairy'], 'Pastry', 'small'),
+('sandwich', 'Sandwich', 'Ham and cheese sandwich', 5.50, ARRAY['gluten', 'dairy', 'meat'], 'Food', 'medium'),
 ('espresso', 'Espresso', 'Strong black coffee brewed by forcing steam through finely ground coffee beans', 2.50, ARRAY['coffee'], 'Beverage', 'small'),
 ('latte', 'Latte', 'Espresso with steamed milk and a light layer of foam', 3.80, ARRAY['coffee', 'milk'], 'Beverage', 'medium'),
 ('mocha', 'Mocha', 'Espresso with chocolate syrup, steamed milk, and whipped cream', 5.00, ARRAY['coffee', 'milk', 'chocolate'], 'Beverage', 'medium'),
@@ -131,53 +136,49 @@ VALUES
 ('croissant', 'Croissant', 'Flaky, buttery pastry', 2.00, ARRAY['gluten', 'dairy'], 'Pastry', 'small'),
 ('bagel', 'Bagel with Cream Cheese', 'Soft bagel with a layer of cream cheese', 2.50, ARRAY['gluten', 'dairy'], 'Pastry', 'small');
 
+INSERT INTO menu_item_ingredients (menu_item_id, ingredient_id, quantity) VALUES
+('espresso', 'espresso_beans', 0.02000),
+('cappuccino', 'espresso_beans', 0.02000),
+('cappuccino', 'milk', 0.05000),
+('latte', 'espresso_beans', 0.02000),
+('latte', 'milk', 0.08000),
+('americano', 'espresso_beans', 0.03000),
+('flat_white', 'espresso_beans', 0.02000),
+('flat_white', 'milk', 0.06000),
+('cheese_croissant', 'bread', 0.10000),
+('cheese_croissant', 'butter', 0.05000),
+('cheese_croissant', 'cheese', 0.05000),
+('chocolate_croissant', 'bread', 0.10000),
+('chocolate_croissant', 'butter', 0.05000),
+('chocolate_croissant', 'chocolate_syrup', 0.05000),
+('muffin', 'bread', 0.10000),
+('muffin', 'butter', 0.05000),
+('muffin', 'sugar', 0.05000),
+('bagel', 'bread', 0.12000),
+('bagel', 'butter', 0.03000),
+('bagel', 'cheese', 0.05000),
+('sandwich', 'bread', 0.15000),
+('sandwich', 'cheese', 0.05000),
+('sandwich', 'ham', 0.08000);
 
-INSERT INTO menu_item_ingredients (menu_item_id, ingredient_id, quantity)
-VALUES
-('espresso', 'coffee_beans', 0.02), 
-('cappuccino', 'coffee_beans', 0.02), 
-('cappuccino', 'milk', 0.05),  
-('latte', 'coffee_beans', 0.02), 
-('latte', 'milk', 0.08),  
-('americano', 'coffee_beans', 0.03), 
-('flat_white', 'coffee_beans', 0.02), 
-('flat_white', 'milk', 0.06), 
-('cheese_croissant', 'flour', 0.1), 
-('cheese_croissant', 'butter', 0.05), 
-('cheese_croissant', 'cheese', 0.05), 
-('chocolate_croissant', 'flour', 0.1), 
-('chocolate_croissant', 'butter', 0.05), 
-('chocolate_croissant', 'chocolate', 0.05), 
-('muffin', 'flour', 0.1),  
-('muffin', 'butter', 0.05), 
-('muffin', 'sugar', 0.05),  
-('bagel', 'flour', 0.12),  
-('bagel', 'butter', 0.03),  
-('bagel', 'cheese', 0.05),  
-('sandwich', 'gluten', 0.15),  
-('sandwich', 'cheese', 0.05),  
-('sandwich', 'ham', 0.08);  
+INSERT INTO customers (name, email, preferences) VALUES
+('John Smith', 'john_smith@gmail.com', '{"note":"subscribe_to_newsletters"}'),
+('Emily Johnson', 'emily_johnson@gmail.com', '{"note":"prefers_clothing_discounts"}'),
+('Michael Williams', 'michael_williams@gmail.com', '{"note":"not_interested_in_ads"}'),
+('Sarah Brown', 'sarah_brown@gmail.com', '{"note":"interested_in_electronics_promotions"}'),
+('David Jones', 'david_jones@gmail.com', '{"note":"wants_product_updates"}'),
+('Olivia Garcia', 'olivia_garcia@gmail.com', '{"note":"prefers_home_goods"}'),
+('James Martinez', 'james_martinez@gmail.com', '{"note":"interested_in_eco_friendly_products"}'),
+('Sophia Rodriguez', 'sophia_rodriguez@gmail.com', '{"note":"interested_in_new_books"}'),
+('Daniel Wilson', 'daniel_wilson@gmail.com', '{"note":"wants_travel_promotions"}'),
+('Isabella Moore', 'isabella_moore@gmail.com', '{"note":"prefers_cosmetics_discounts"}'),
+('William Taylor', 'william_taylor@gmail.com', '{"note":"interested_in_sports_and_fitness"}'),
+('Charlotte Anderson', 'charlotte_anderson@gmail.com', '{"note":"not_interested_in_newsletters"}'),
+('Lucas Thomas', 'lucas_thomas@gmail.com', '{"note":"interested_in_pets"}'),
+('Mia Jackson', 'mia_jackson@gmail.com', '{"note":"prefers_baby_products"}'),
+('Henry White', 'henry_white@gmail.com', '{"note":"looking_for_travel_deals"}');
 
-INSERT INTO customers (name, email, preferences)
-VALUES
-('John Smith', 'john_smith@gmail.com', '{"note:":"subscribe_to_newsletters"}'),
-('Emily Johnson', 'emily_johnson@gmail.com', '{"note:":"prefers_clothing_discounts"}'),
-('Michael Williams', 'michael_williams@gmail.com', '{"note:":"not_interested_in_ads"}'),
-('Sarah Brown', 'sarah_brown@gmail.com', '{"note:":"interested_in_electronics_promotions"}'),
-('David Jones', 'david_jones@gmail.com', '{"note:":"wants_product_updates"}'),
-('Olivia Garcia', 'olivia_garcia@gmail.com', '{"note:":"prefers_home_goods"}'),
-('James Martinez', 'james_martinez@gmail.com', '{"note:":"interested_in_eco_friendly_products"}'),
-('Sophia Rodriguez', 'sophia_rodriguez@gmail.com', '{"note:":"interested_in_new_books"}'),
-('Daniel Wilson', 'daniel_wilson@gmail.com', '{"note:":"wants_travel_promotions"}'),
-('Isabella Moore', 'isabella_moore@gmail.com', '{"note:":"prefers_cosmetics_discounts"}'),
-('William Taylor', 'william_taylor@gmail.com', '{"note:":"interested_in_sports_and_fitness"}'),
-('Charlotte Anderson', 'charlotte_anderson@gmail.com', '{"note:":"not_interested_in_newsletters"}'),
-('Lucas Thomas', 'lucas_thomas@gmail.com', '{"note:":"interested_in_pets"}'),
-('Mia Jackson', 'mia_jackson@gmail.com', '{"note:":"prefers_baby_products"}'),
-('Henry White', 'henry_white@gmail.com', '{"note:":"looking_for_travel_deals"}');
-
-INSERT INTO orders (customer_id, total_amount, status, special_instructions, payment_method, created_at, updated_at)
-VALUES
+INSERT INTO orders (customer_id, total_amount, status, special_instructions, payment_method, created_at, updated_at) VALUES
 (1, 7.80, 'open', '{"note":"Add extra milk"}', 'card', '2024-01-10 08:45:00', '2024-01-10 08:50:00'),
 (2, 12.00, 'closed', '{"note":"Extra cheese"}', 'cash', '2024-01-12 12:30:00', '2024-01-12 12:35:00'),
 (3, 8.50, 'open', '{"note":"No sugar"}', 'card', '2024-01-14 15:15:00', '2024-01-14 15:20:00'),
@@ -209,64 +210,59 @@ VALUES
 (29, 10.50, 'open', '{"note":"Less salt"}', 'cash', '2024-03-07 10:30:00', '2024-03-07 10:35:00'),
 (30, 8.80, 'closed', '{"note":"Extra cinnamon"}', 'card', '2024-03-09 14:15:00', '2024-03-09 14:20:00');
 
-
-
-INSERT INTO order_items (order_id, menu_item_id, quantity, price_at_order)
-VALUES
-(1, 'espresso', 2, 3.50),  
+INSERT INTO order_items (order_id, menu_item_id, quantity, price_at_order) VALUES
+(1, 'espresso', 2, 3.50),
 (1, 'cheese_croissant', 1, 2.50),
-(2, 'cappuccino', 1, 4.50),  
+(2, 'cappuccino', 1, 4.50),
 (2, 'muffin', 2, 2.80),
-(3, 'latte', 1, 4.00),  
+(3, 'latte', 1, 4.00),
 (3, 'chocolate_croissant', 1, 3.00),
-(4, 'americano', 2, 3.00), 
+(4, 'americano', 2, 3.00),
 (4, 'bagel', 1, 2.60),
-(5, 'flat_white', 1, 4.20), 
+(5, 'flat_white', 1, 4.20),
 (5, 'sandwich', 1, 5.50),
-(6, 'cheese_croissant', 1, 2.50), 
+(6, 'cheese_croissant', 1, 2.50),
 (6, 'muffin', 2, 2.80),
-(7, 'latte', 1, 4.00), 
+(7, 'latte', 1, 4.00),
 (7, 'sandwich', 1, 5.50),
-(8, 'americano', 1, 3.00),  
+(8, 'americano', 1, 3.00),
 (8, 'muffin', 2, 2.80),
-(9, 'espresso', 1, 3.50),  
+(9, 'espresso', 1, 3.50),
 (9, 'chocolate_croissant', 1, 3.00),
-(10, 'cappuccino', 1, 4.50),  
+(10, 'cappuccino', 1, 4.50),
 (10, 'cheese_croissant', 1, 2.50),
-(16, 'espresso', 2, 3.50),  
+(16, 'espresso', 2, 3.50),
 (16, 'cheese_croissant', 1, 2.50),
-(17, 'latte', 1, 4.00),  
+(17, 'latte', 1, 4.00),
 (17, 'muffin', 2, 2.80),
-(18, 'americano', 1, 3.00), 
+(18, 'americano', 1, 3.00),
 (18, 'bagel', 1, 2.60),
-(19, 'flat_white', 1, 4.20), 
+(19, 'flat_white', 1, 4.20),
 (19, 'sandwich', 1, 5.50),
-(20, 'espresso', 1, 3.50),  
+(20, 'espresso', 1, 3.50),
 (20, 'cheese_croissant', 1, 2.50),
-(21, 'cappuccino', 1, 4.50),  
+(21, 'cappuccino', 1, 4.50),
 (21, 'chocolate_croissant', 1, 3.00),
-(22, 'latte', 1, 4.00),  
+(22, 'latte', 1, 4.00),
 (22, 'muffin', 2, 2.80),
 (23, 'espresso', 2, 3.50),
 (23, 'sandwich', 1, 5.50),
-(24, 'americano', 1, 3.00),  
+(24, 'americano', 1, 3.00),
 (24, 'muffin', 2, 2.80),
-(25, 'latte', 1, 4.00),  
+(25, 'latte', 1, 4.00),
 (25, 'cheese_croissant', 1, 2.50),
-(26, 'flat_white', 1, 4.20), 
+(26, 'flat_white', 1, 4.20),
 (26, 'sandwich', 1, 5.50),
-(27, 'cappuccino', 1, 4.50),  
+(27, 'cappuccino', 1, 4.50),
 (27, 'cheese_croissant', 1, 2.50),
-(28, 'latte', 1, 4.00), 
+(28, 'latte', 1, 4.00),
 (28, 'sandwich', 1, 5.50),
-(29, 'espresso', 1, 3.50),  
+(29, 'espresso', 1, 3.50),
 (29, 'chocolate_croissant', 1, 3.00),
-(30, 'cappuccino', 1, 4.50),  
+(30, 'cappuccino', 1, 4.50),
 (30, 'cheese_croissant', 1, 2.50);
 
-
-INSERT INTO inventory_transactions (inventory_id, change_amount, transaction_type, changed_at)
-VALUES
+INSERT INTO inventory_transactions (inventory_id, change_amount, transaction_type, changed_at) VALUES
 ('espresso_beans', -1.0, 'sale', '2024-01-10'),
 ('bread', -2.0, 'sale', '2024-01-12'),
 ('chocolate_syrup', -0.5, 'sale', '2024-01-14'),
@@ -288,10 +284,7 @@ VALUES
 ('croissants', -4.0, 'sale', '2024-02-16'),
 ('milk', -1.2, 'sale', '2024-02-18');
 
-
-
-INSERT INTO order_status_history (order_id, previous_status, new_status, changed_at)
-VALUES
+INSERT INTO order_status_history (order_id, previous_status, new_status, changed_at) VALUES
 (1, 'open', 'closed', '2024-01-10'),
 (2, 'open', 'closed', '2024-01-12'),
 (3, 'open', 'closed', '2024-01-14'),
@@ -313,10 +306,7 @@ VALUES
 (19, 'open', 'closed', '2024-02-16'),
 (20, 'open', 'closed', '2024-02-18');
 
-
-
-INSERT INTO price_history (menu_item_id, old_price, new_price, changed_at)
-VALUES
+INSERT INTO price_history (menu_item_id, old_price, new_price, changed_at) VALUES
 ('espresso', 2.00, 2.50, '2024-01-01'),
 ('latte', 3.50, 3.80, '2024-01-01'),
 ('mocha', 4.50, 5.00, '2024-01-01'),

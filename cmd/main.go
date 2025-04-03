@@ -1,35 +1,32 @@
-package db
+package main
 
 import (
-    "database/sql"
-    "fmt"
-    _ "github.com/lib/pq" // PostgreSQL driver
+    "log"
+    "net/http"
+
+    "frappuccino/internal/config"
+    "frappuccino/internal/db"
+    "frappuccino/internal/handlers"
 )
 
-// Config represents the database connection settings.
-type Config struct {
-    Host     string
-    Port     string
-    User     string
-    Password string
-    Name     string
-}
+func main() {
+    // Загружаем конфигурацию базы данных
+    cfg := config.LoadConfig()
 
-// Connect establishes a connection to the PostgreSQL database.
-func Connect(cfg Config) (*sql.DB, error) {
-    connStr := fmt.Sprintf(
-        "host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-        cfg.Host, cfg.Port, cfg.User, cfg.Password, cfg.Name,
-    )
-
-    db, err := sql.Open("postgres", connStr)
+    // Подключаемся к базе данных
+    dbConn, err := db.Connect(cfg.DB)
     if err != nil {
-        return nil, err
+        log.Fatalf("Failed to connect to the database: %v", err)
     }
+    defer dbConn.Close()
 
-    if err := db.Ping(); err != nil {
-        return nil, err
-    }
+    // Регистрируем обработчики
+    http.HandleFunc("/orders", handlers.CreateOrder(dbConn))
+    http.HandleFunc("/orders/", handlers.GetOrderByID(dbConn))
+    http.HandleFunc("/orders/close", handlers.CloseOrder(dbConn))
+    http.HandleFunc("/orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
 
-    return db, nil
+    // Запускаем HTTP-сервер
+    log.Println("Server is running on port 8080...")
+    log.Fatal(http.ListenAndServe(":8080", nil))
 }

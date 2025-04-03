@@ -1,33 +1,34 @@
-# Сборка приложения
+# Этап сборки
 FROM golang:1.23 AS builder
 
-# Установка рабочей директории
 WORKDIR /app
 
-# Копирование зависимостей
+# Сначала копируем файлы зависимостей
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копирование исходного кода
+# Затем копируем весь остальной код
 COPY . .
 
-# Сборка приложения
-RUN go build -o main ./cmd/main.go
+# Собираем статический бинарник
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o /app/main ./cmd/main.go
 
-# Итоговый образ
-FROM alpine:latest
+# Финальный образ
+FROM alpine:3.19
 
-# Установка рабочей директории
 WORKDIR /app
 
-# Копирование бинарного файла из builder-стадии
+# Копируем бинарник из этапа сборки
 COPY --from=builder /app/main /app/main
 
-# Добавление прав на выполнение
+# Устанавливаем зависимости для Alpine
+RUN apk --no-cache add ca-certificates
+
+# Делаем бинарник исполняемым
 RUN chmod +x /app/main
 
-# Открытие порта
+# Открываем порт
 EXPOSE 8080
 
-# Запуск приложения
-CMD ["./main"]
+# Запускаем приложение
+ENTRYPOINT ["/app/main"]
