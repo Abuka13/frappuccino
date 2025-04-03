@@ -81,63 +81,6 @@ CREATE TABLE IF NOT EXISTS inventory_transactions (
     changed_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- ALTER TABLE menu_items ADD COLUMN search_vector tsvector;
--- ALTER TABLE orders ADD COLUMN search_vector tsvector;
-
--- UPDATE menu_items 
--- SET search_vector = to_tsvector('english', name || ' ' || COALESCE(description, ''));
---triger for menu)items
--- CREATE OR REPLACE FUNCTION update_menu_items_search_vector() 
--- RETURNS TRIGGER AS $$
--- BEGIN
---     UPDATE menu_items 
---     SET search_vector = to_tsvector('english', 
---         NEW.name || ' ' || 
---         COALESCE(NEW.description, '') || ' ' || 
---         COALESCE(array_to_string(NEW.allergens, ' '), ''))
---     WHERE id = NEW.id;
---     RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE TRIGGER menu_items_search_vector_trigger
--- AFTER INSERT OR UPDATE ON menu_items
--- FOR EACH ROW EXECUTE FUNCTION update_menu_items_search_vector();
-
-
--- UPDATE orders 
--- SET search_vector = to_tsvector('english', customers.name || ' ' || COALESCE(menu_items.name, ''))
--- FROM customers
--- JOIN order_items oi ON oi.order_id = orders.id
--- JOIN menu_items menu_items ON menu_items.id = oi.menu_item_id
--- WHERE orders.customer_id = customers.id;
---trigger for orders
--- CREATE OR REPLACE FUNCTION update_orders_search_vector() 
--- RETURNS TRIGGER AS $$
--- BEGIN
---     UPDATE orders 
---     SET search_vector = to_tsvector('english', 
---         customers.name || ' ' || 
---         COALESCE(CAST(NEW.total_amount AS TEXT), '') || ' ' || 
---         COALESCE(NEW.status::text, '') || ' ' || 
---         COALESCE(NEW.payment_method::text, '') || ' ' || 
---         COALESCE(NEW.special_instructions::text, '') || ' ' || 
---         COALESCE(menu_items.name, '')
---     )
---     FROM customers
---     JOIN order_items oi ON oi.order_id = NEW.id
---     JOIN menu_items menu_items ON menu_items.id = oi.menu_item_id
---     WHERE orders.id = NEW.id AND orders.customer_id = customers.id;
---     RETURN NEW;
--- END;
--- $$ LANGUAGE plpgsql;
-
--- CREATE TRIGGER orders_search_vector_trigger
--- AFTER INSERT OR UPDATE ON orders
--- FOR EACH ROW EXECUTE FUNCTION update_orders_search_vector();
-
--- CREATE INDEX menu_items_search_idx ON menu_items USING gin(search_vector);
--- CREATE INDEX orders_search_idx ON orders USING gin(search_vector);
 
 CREATE INDEX idx_orders_customer_id ON orders(customer_id);
 CREATE INDEX idx_orders_status ON orders(status);
@@ -170,7 +113,7 @@ VALUES
 ('yogurt', 'Yogurt', 50, 'liters', 4.0),
 ('croissants', 'Croissants', 120, 'pieces', 1.5),
 ('bagels', 'Bagels', 180, 'pieces', 1.8),
-('cream', 'Cream', 30, 'liters', 3.0),1
+('cream', 'Cream', 30, 'liters', 3.0),
 ('sugar', 'Sugar', 150, 'kg', 1.2),
 ('coffee_cups', 'Coffee Cups', 1000, 'pieces', 0.05);
 
