@@ -1,4 +1,4 @@
-CREATE TYPE order_status AS ENUM ('open', 'close');
+CREATE TYPE order_status AS ENUM ('open', 'closed');
 CREATE TYPE payment_method AS ENUM ('cash', 'card', 'kaspi_qr');
 CREATE TYPE item_size AS ENUM ('small', 'medium', 'large');
 CREATE TYPE transaction_type AS ENUM ('added', 'written off', 'sale', 'created');
@@ -161,6 +161,7 @@ INSERT INTO menu_item_ingredients (menu_item_id, ingredient_id, quantity) VALUES
 ('sandwich', 'cheese', 0.05000),
 ('sandwich', 'ham', 0.08000);
 
+-- Insert customers (now with 30 records to match all orders)
 INSERT INTO customers (name, email, preferences) VALUES
 ('John Smith', 'john_smith@gmail.com', '{"note":"subscribe_to_newsletters"}'),
 ('Emily Johnson', 'emily_johnson@gmail.com', '{"note":"prefers_clothing_discounts"}'),
@@ -176,8 +177,24 @@ INSERT INTO customers (name, email, preferences) VALUES
 ('Charlotte Anderson', 'charlotte_anderson@gmail.com', '{"note":"not_interested_in_newsletters"}'),
 ('Lucas Thomas', 'lucas_thomas@gmail.com', '{"note":"interested_in_pets"}'),
 ('Mia Jackson', 'mia_jackson@gmail.com', '{"note":"prefers_baby_products"}'),
-('Henry White', 'henry_white@gmail.com', '{"note":"looking_for_travel_deals"}');
+('Henry White', 'henry_white@gmail.com', '{"note":"looking_for_travel_deals"}'),
+('Emma Harris', 'emma_harris@gmail.com', '{"note":"interested_in_fashion"}'),
+('Alexander Clark', 'alexander_clark@gmail.com', '{"note":"prefers_tech_products"}'),
+('Ava Lewis', 'ava_lewis@gmail.com', '{"note":"wants_food_delivery_deals"}'),
+('Benjamin Walker', 'benjamin_walker@gmail.com', '{"note":"interested_in_diy"}'),
+('Chloe Hall', 'chloe_hall@gmail.com', '{"note":"prefers_beauty_products"}'),
+('Jacob Allen', 'jacob_allen@gmail.com', '{"note":"interested_in_gaming"}'),
+('Abigail Young', 'abigail_young@gmail.com', '{"note":"wants_book_recommendations"}'),
+('Matthew Hernandez', 'matthew_hernandez@gmail.com', '{"note":"interested_in_fitness"}'),
+('Elizabeth King', 'elizabeth_king@gmail.com', '{"note":"prefers_home_decor"}'),
+('Ethan Wright', 'ethan_wright@gmail.com', '{"note":"interested_in_cars"}'),
+('Sofia Lopez', 'sofia_lopez@gmail.com', '{"note":"wants_recipe_ideas"}'),
+('Andrew Hill', 'andrew_hill@gmail.com', '{"note":"interested_in_photography"}'),
+('Madison Scott', 'madison_scott@gmail.com', '{"note":"prefers_pet_products"}'),
+('Joshua Green', 'joshua_green@gmail.com', '{"note":"interested_in_music"}'),
+('Victoria Adams', 'victoria_adams@gmail.com', '{"note":"wants_travel_tips"}');
 
+-- Now all orders can be inserted without foreign key violations
 INSERT INTO orders (customer_id, total_amount, status, special_instructions, payment_method, created_at, updated_at) VALUES
 (1, 7.80, 'open', '{"note":"Add extra milk"}', 'card', '2024-01-10 08:45:00', '2024-01-10 08:50:00'),
 (2, 12.00, 'closed', '{"note":"Extra cheese"}', 'cash', '2024-01-12 12:30:00', '2024-01-12 12:35:00'),
