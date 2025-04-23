@@ -15,20 +15,17 @@ func CreateOrder(dbc *sql.DB) http.HandlerFunc {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
-
 		// Verify content type
 		if r.Header.Get("Content-Type") != "application/json" {
 			http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
 			return
 		}
-
 		var order db.Order
 		if err := json.NewDecoder(r.Body).Decode(&order); err != nil {
 			http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 		defer r.Body.Close()
-
 		// Validate required fields
 		if order.CustomerID == 0 {
 			http.Error(w, "customer_id is required", http.StatusBadRequest)
@@ -42,12 +39,10 @@ func CreateOrder(dbc *sql.DB) http.HandlerFunc {
 			http.Error(w, "payment_method is required", http.StatusBadRequest)
 			return
 		}
-
 		// Set default status if not provided
 		if order.Status == "" {
 			order.Status = "open"
 		}
-
 		// Insert into database
 		query := `
             INSERT INTO orders (customer_id, total_amount, status, special_instructions, payment_method)
@@ -66,12 +61,25 @@ func CreateOrder(dbc *sql.DB) http.HandlerFunc {
 			http.Error(w, "Failed to create order: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(map[string]int{"order_id": orderID})
 	}
 }
+
+func UpdateOrder(dbc *sql.DB) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.request) {
+        if r.Method != http.MethodPut {
+            http.Error(w, "The incorrect Method", http.StatusMethodNotAllowed)
+        }
+        if r.Header.Get("Content-Type") != "application/json" {
+            http.Error(w, "Content-Type must be application/json", http.StatusUnsupportedMediaType)
+        }
+        var 
+    }
+}
+
+
 
 func GetOrders(dbс *sql.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -150,9 +158,10 @@ func CloseOrder(dbс *sql.DB) http.HandlerFunc {
 		// Extract the "id" parameter from the URL path
 		path := r.URL.Path
 		var orderID string
-		_, err := fmt.Sscanf(path, "/orders/%s/close", &orderID)
+		_, err := fmt.Sscanf(path, "/orders/close/%s", &orderID)
 		if err != nil {
 			http.Error(w, "Invalid order ID", http.StatusBadRequest)
+            log.Println(err)
 			return
 		}
 

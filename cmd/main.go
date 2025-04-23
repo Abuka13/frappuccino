@@ -23,7 +23,7 @@ func main() {
     // Регистрируем обработчики
     http.HandleFunc("/orders", handlers.CreateOrder(dbConn))
     http.HandleFunc("/orders/", handlers.GetOrderByID(dbConn))
-    http.HandleFunc("/orders/close", handlers.CloseOrder(dbConn))
+    http.HandleFunc("/orders/close/", handlers.CloseOrder(dbConn))
     http.HandleFunc("/orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
 
     // Запускаем HTTP-сервер
