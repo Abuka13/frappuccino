@@ -6,8 +6,8 @@ As part of the task, the following endpoints must be rewritten to work using SQL
         POST /orders: Create a new order.  ++++++++++
         GET /orders: Retrieve all orders. +++++++++++
         GET /orders/{id}: Retrieve a specific order by ID.          ++++++
-        PUT /orders/{id}: Update an existing order.         
-        DELETE /orders/{id}: Delete an order.       
+        PUT /orders/{id}: Update an existing order.    ++++      
+        DELETE /orders/{id}: Delete an order.        +++
         POST /orders/{id}/close: Close an order.                 ++
 
     Menu Items:

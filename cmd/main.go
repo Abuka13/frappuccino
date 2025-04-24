@@ -21,10 +21,13 @@ func main() {
     defer dbConn.Close()
 
     // Регистрируем обработчики
-    http.HandleFunc("/orders", handlers.CreateOrder(dbConn))
-    http.HandleFunc("/orders/", handlers.GetOrderByID(dbConn))
-    http.HandleFunc("/orders/close/", handlers.CloseOrder(dbConn))
-    http.HandleFunc("/orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
+    http.HandleFunc("GET /orders", handlers.GetOrders(dbConn))
+    http.HandleFunc("POST /orders", handlers.CreateOrder(dbConn))
+    http.HandleFunc("DELETE /orders/", handlers.DeleteOrder(dbConn))
+    http.HandleFunc("GET /orders/", handlers.GetOrderByID(dbConn))
+    http.HandleFunc("PUT /orders/", handlers.UpdateOrderByID(dbConn))
+    http.HandleFunc("POST /orders/close/", handlers.CloseOrder(dbConn))
+    http.HandleFunc("GET /orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
 
     // Запускаем HTTP-сервер
     log.Println("Server is running on port 8080...")
