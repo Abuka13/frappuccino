@@ -29,6 +29,22 @@ func main() {
     http.HandleFunc("POST /orders/close/", handlers.CloseOrder(dbConn))
     http.HandleFunc("GET /orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
 
+    // Inventory routes
+    http.HandleFunc("GET /inventory", handlers.GetInventoryItems(dbConn))
+    http.HandleFunc("POST /inventory", handlers.CreateInventoryItem(dbConn))
+    http.HandleFunc("GET /inventory/", handlers.GetInventoryItemByID(dbConn))
+    http.HandleFunc("PUT /inventory/", handlers.UpdateInventoryItem(dbConn))
+    http.HandleFunc("DELETE /inventory/", handlers.DeleteInventoryItem(dbConn))
+    // http.HandleFunc("POST /inventory/restock/", handlers.RestockInventoryItem(dbConn))
+
+    // Menu Items routes
+    http.HandleFunc("GET /menu", handlers.GetMenuItems(dbConn))
+    http.HandleFunc("POST /menu", handlers.CreateMenuItem(dbConn))
+    http.HandleFunc("GET /menu/", handlers.GetMenuItemByID(dbConn))
+    http.HandleFunc("PUT /menu/", handlers.UpdateMenuItem(dbConn))
+    http.HandleFunc("DELETE /menu/", handlers.DeleteMenuItem(dbConn))
+    // http.HandleFunc("POST /menu_items/toggle/", handlers.ToggleMenuItemAvailability(dbConn))
+
     // Запускаем HTTP-сервер
     log.Println("Server is running on port 8080...")
     log.Fatal(http.ListenAndServe(":8080", nil))

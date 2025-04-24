@@ -369,5 +369,3 @@ func GetNumberOfOrderedItems(db *sql.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(items)
 	}
 }
-
-// PUT DELETE
