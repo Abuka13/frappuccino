@@ -44,12 +44,13 @@ func CreateMenuItem(dbc *sql.DB) http.HandlerFunc {
 		}
 
 		query := `
-			INSERT INTO menu_items (name, description, price, allergens, category, size)
-			VALUES ($1, $2, $3, $4, $5, $6)
+			INSERT INTO menu_items (id,name, description, price, allergens, category, size)
+			VALUES ($1, $2, $3, $4, $5, $6, $7)
 			RETURNING id
 		`
 		var id string
 		err := dbc.QueryRowContext(r.Context(), query,
+			item.ID,
 			item.Name,
 			item.Description,
 			item.Price,
@@ -117,7 +118,7 @@ func GetMenuItemByID(dbc *sql.DB) http.HandlerFunc {
 
 		path := r.URL.Path
 		var id string
-		_, err := fmt.Sscanf(path, "/menu_items/%s", &id)
+		_, err := fmt.Sscanf(path, "/menu/%s", &id)
 		if err != nil {
 			http.Error(w, "Invalid menu item ID", http.StatusBadRequest)
 			return
@@ -167,7 +168,7 @@ func UpdateMenuItem(dbc *sql.DB) http.HandlerFunc {
 
 		path := r.URL.Path
 		var id string
-		_, err := fmt.Sscanf(path, "/menu_items/%s", &id)
+		_, err := fmt.Sscanf(path, "/menu/%s", &id)
 		if err != nil {
 			http.Error(w, "Invalid menu item ID", http.StatusBadRequest)
 			return
@@ -229,7 +230,7 @@ func DeleteMenuItem(dbc *sql.DB) http.HandlerFunc {
 
 		path := r.URL.Path
 		var id string
-		_, err := fmt.Sscanf(path, "/menu_items/%s", &id)
+		_, err := fmt.Sscanf(path, "/menu/%s", &id)
 		if err != nil {
 			http.Error(w, "Invalid menu item ID", http.StatusBadRequest)
 			return

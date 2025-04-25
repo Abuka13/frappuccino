@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"frappuccino/internal/db"
 	"net/http"
-	
+	"log"
 )
 
 func CreateInventoryItem(dbc *sql.DB) http.HandlerFunc {
@@ -47,12 +47,13 @@ func CreateInventoryItem(dbc *sql.DB) http.HandlerFunc {
 		}
 
 		query := `
-			INSERT INTO inventory (name, stock, price, unit_type, last_updated)
-			VALUES ($1, $2, $3, $4, NOW())
+			INSERT INTO inventory (id,name, stock, price, unit_type, last_updated)
+			VALUES ($1, $2, $3, $4, $5,NOW())
 			RETURNING id
 		`
 		var id string
 		err := dbc.QueryRowContext(r.Context(), query,
+			item.ID,
 			item.Name,
 			item.Stock,
 			item.Price,
@@ -60,6 +61,7 @@ func CreateInventoryItem(dbc *sql.DB) http.HandlerFunc {
 		).Scan(&id)
 		if err != nil {
 			http.Error(w, "Failed to create inventory item: "+err.Error(), http.StatusInternalServerError)
+			log.Println(err)
 			return
 		}
 
@@ -213,7 +215,7 @@ func UpdateInventoryItem(dbc *sql.DB) http.HandlerFunc {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]string{"id": id})
+		json.NewEncoder(w).Encode("The inventory was updated succesfully")
 	}
 }
 
@@ -245,7 +247,8 @@ func DeleteInventoryItem(dbc *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		w.WriteHeader(http.StatusNoContent)
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode("The inventory was deleted succesfully")
 	}
 }
 
