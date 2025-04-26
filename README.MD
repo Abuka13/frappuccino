@@ -25,7 +25,7 @@ As part of the task, the following endpoints must be rewritten to work using SQL
         DELETE /inventory/{id}: Delete an inventory item.+
 
     Aggregations:
-        GET /reports/total-sales: Get the total sales amount.
+        GET /reports/total-sales: Get the total sales amount. +
         GET /reports/popular-items: Get a list of popular menu items.
 
 

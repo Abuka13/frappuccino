@@ -45,6 +45,10 @@ func main() {
     http.HandleFunc("DELETE /menu/", handlers.DeleteMenuItem(dbConn))
     // http.HandleFunc("POST /menu_items/toggle/", handlers.ToggleMenuItemAvailability(dbConn))
 
+
+    // Report routes
+    http.HandleFunc("GET /reports/total-sales", handlers.TotalAmount(dbConn))
+    // http.HandleFunc("GET /reports/popular-items", handlers.CreateMenuItem(dbConn))
     // Запускаем HTTP-сервер
     log.Println("Server is running on port 8080...")
     log.Fatal(http.ListenAndServe(":8080", nil))
