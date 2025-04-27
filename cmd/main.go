@@ -48,7 +48,7 @@ func main() {
 
     // Report routes
     http.HandleFunc("GET /reports/total-sales", handlers.TotalAmount(dbConn))
-    // http.HandleFunc("GET /reports/popular-items", handlers.CreateMenuItem(dbConn))
+    http.HandleFunc("GET /reports/popular-items", handlers.PopularItems(dbConn))
     // Запускаем HTTP-сервер
     log.Println("Server is running on port 8080...")
     log.Fatal(http.ListenAndServe(":8080", nil))
