@@ -4,8 +4,9 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"frappuccino/internal/db"
 	"net/http"
+
+	"frappuccino/internal/db"
 
 	"github.com/lib/pq"
 )
@@ -269,8 +270,8 @@ func DeleteMenuItem(dbc *sql.DB) http.HandlerFunc {
 // 		}
 
 // 		query := `
-// 			UPDATE menu_items 
-// 			SET is_available = NOT is_available 
+// 			UPDATE menu_items
+// 			SET is_available = NOT is_available
 // 			WHERE id = $1
 // 			RETURNING id, is_available
 // 		`
@@ -294,4 +295,3 @@ func DeleteMenuItem(dbc *sql.DB) http.HandlerFunc {
 // 		})
 // 	}
 // }
-

@@ -26,7 +26,7 @@ func main() {
     http.HandleFunc("DELETE /orders/", handlers.DeleteOrder(dbConn))
     http.HandleFunc("GET /orders/", handlers.GetOrderByID(dbConn))
     http.HandleFunc("PUT /orders/", handlers.UpdateOrderByID(dbConn))
-    http.HandleFunc("POST /orders/close/", handlers.CloseOrder(dbConn))
+    http.HandleFunc("POST /orders/close/", handlers.CloseOrder(dbConn))go install mvdan.cc/gofumpt@latest
 
     // Inventory routes
     http.HandleFunc("GET /inventory", handlers.GetInventoryItems(dbConn))

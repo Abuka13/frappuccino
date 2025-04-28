@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
-	"frappuccino/internal/db"
-	"net/http"
 	"log"
+	"net/http"
+
+	"frappuccino/internal/db"
 )
 
 func CreateInventoryItem(dbc *sql.DB) http.HandlerFunc {
@@ -283,7 +284,7 @@ func DeleteInventoryItem(dbc *sql.DB) http.HandlerFunc {
 // 		}
 
 // 		query := `
-// 			UPDATE inventory 
+// 			UPDATE inventory
 // 			SET stock = stock + $2, last_updated = NOW()
 // 			WHERE id = $1
 // 			RETURNING id, stock

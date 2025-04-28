@@ -34,9 +34,9 @@ func FullTextSearchReport(dbc *sql.DB) http.HandlerFunc {
 		maxPrice, _ := strconv.ParseFloat(r.URL.Query().Get("maxPrice"), 64)
 
 		response := struct {
-			MenuItems   []map[string]interface{} `json:"menu_items"`
-			Orders      []map[string]interface{} `json:"orders"`
-			TotalMatches int                     `json:"total_matches"`
+			MenuItems    []map[string]interface{} `json:"menu_items"`
+			Orders       []map[string]interface{} `json:"orders"`
+			TotalMatches int                      `json:"total_matches"`
 		}{}
 
 		// Search menu items if requested
@@ -104,18 +104,18 @@ func FullTextSearchReport(dbc *sql.DB) http.HandlerFunc {
 				JOIN menu_items mi ON oi.menu_item_id = mi.id
 				WHERE c.name ILIKE '%' || $1 || '%'
 			`
-			
+
 			// Add price filtering if needed
 			if minPrice > 0 || maxPrice > 0 {
 				orderQuery += " AND o.total_amount BETWEEN $2 AND $3"
 			}
-			
+
 			// Add grouping and ordering (only once, at the end)
 			orderQuery += " GROUP BY o.id, c.name, o.total_amount ORDER BY relevance DESC, o.id ASC LIMIT 10"
-		
+
 			var rows *sql.Rows
 			var err error
-			
+
 			if minPrice > 0 || maxPrice > 0 {
 				rows, err = dbc.Query(orderQuery, query, minPrice, maxPrice)
 			} else {
@@ -169,9 +169,9 @@ func OrderedItemsByPeriod(dbc *sql.DB) http.HandlerFunc {
 		}
 
 		response := struct {
-			Period       string          `json:"period"`
-			Month       string          `json:"month,omitempty"`
-			Year        string          `json:"year,omitempty"`
+			Period       string           `json:"period"`
+			Month        string           `json:"month,omitempty"`
+			Year         string           `json:"year,omitempty"`
 			OrderedItems []map[string]int `json:"orderedItems"`
 		}{
 			Period: period,
@@ -305,7 +305,7 @@ func GetLeftovers(dbc *sql.DB) http.HandlerFunc {
 
 		// Build base query
 		query := "SELECT name, stock as quantity, price FROM inventory"
-		
+
 		// Add sorting
 		switch sortBy {
 		case "price":
@@ -421,10 +421,10 @@ func BulkOrderProcess(dbc *sql.DB) http.HandlerFunc {
 		}{
 			ProcessedOrders: make([]map[string]interface{}, 0),
 			Summary: map[string]interface{}{
-				"total_orders": len(request.Orders),
-				"accepted":     0,
-				"rejected":     0,
-				"total_revenue": 0.0,
+				"total_orders":      len(request.Orders),
+				"accepted":          0,
+				"rejected":          0,
+				"total_revenue":     0.0,
 				"inventory_updates": make([]map[string]interface{}, 0),
 			},
 		}
@@ -495,7 +495,7 @@ func BulkOrderProcess(dbc *sql.DB) http.HandlerFunc {
 				}
 
 				// Create order
-				
+
 				err = tx.QueryRow(`
 					INSERT INTO orders (customer_id, total_amount, status, payment_method) 
 					VALUES ($1, $2, 'open', 'cash') 
@@ -503,7 +503,7 @@ func BulkOrderProcess(dbc *sql.DB) http.HandlerFunc {
 				if err != nil {
 					canProcess = false
 				}
-				
+
 				// Add order items
 				if canProcess {
 					for _, item := range order.Items {
@@ -546,10 +546,10 @@ func BulkOrderProcess(dbc *sql.DB) http.HandlerFunc {
 			// Build response for this order
 			orderResult := map[string]interface{}{
 				"customer_name": order.CustomerName,
-				"status":       "accepted",
-				"total":        totalAmount,
+				"status":        "accepted",
+				"total":         totalAmount,
 			}
-			
+
 			if canProcess {
 				orderResult["order_id"] = orderID
 				response.Summary["accepted"] = response.Summary["accepted"].(int) + 1
