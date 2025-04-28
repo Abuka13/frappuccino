@@ -91,6 +91,8 @@ CREATE INDEX idx_inventory_price ON inventory(price);
 CREATE INDEX idx_inventory_stock_level ON inventory(stock);
 CREATE INDEX idx_order_status_history_order_id ON order_status_history(order_id);
 CREATE INDEX idx_price_history_menu_item_id ON price_history(menu_item_id);
+CREATE INDEX idx_menu_items_description ON menu_items (description);
+CREATE INDEX idx_customers_name ON customers (name);
 
 -- Insert mock data into the inventory table
 INSERT INTO inventory (id, name, stock, unit_type, price) VALUES

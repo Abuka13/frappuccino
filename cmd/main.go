@@ -27,7 +27,6 @@ func main() {
     http.HandleFunc("GET /orders/", handlers.GetOrderByID(dbConn))
     http.HandleFunc("PUT /orders/", handlers.UpdateOrderByID(dbConn))
     http.HandleFunc("POST /orders/close/", handlers.CloseOrder(dbConn))
-    http.HandleFunc("GET /orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
 
     // Inventory routes
     http.HandleFunc("GET /inventory", handlers.GetInventoryItems(dbConn))
@@ -49,7 +48,14 @@ func main() {
     // Report routes
     http.HandleFunc("GET /reports/total-sales", handlers.TotalAmount(dbConn))
     http.HandleFunc("GET /reports/popular-items", handlers.PopularItems(dbConn))
-    // Запускаем HTTP-сервер
+
+    http.HandleFunc("GET /orders/numberOfOrderedItems", handlers.GetNumberOfOrderedItems(dbConn))
+
+    http.HandleFunc("GET /reports/search", handlers.FullTextSearchReport(dbConn))
+    http.HandleFunc("GET /reports/orderedItemsByPeriod", handlers.OrderedItemsByPeriod(dbConn))
+    http.HandleFunc("POST /orders/batch-process", handlers.BulkOrderProcess(dbConn))
+    http.HandleFunc("GET /inventory/getLeftOvers", handlers.GetLeftovers(dbConn))
+        // Запускаем HTTP-сервер    
     log.Println("Server is running on port 8080...")
     log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -34,13 +34,13 @@ As part of the task, the following endpoints must be rewritten to work using SQL
 
 
 
-#### 2. Full Text Search Report
+#### 2. Full Text Search Report 
 
-#### 3. Ordered items by period
-
-
-#### 4. Get leftovers
+#### 3. Ordered items by period +
 
 
-#### 5. Bulk Order Processing
+#### 4. Get leftovers +
+
+
+#### 5. Bulk Order Processing +
 
